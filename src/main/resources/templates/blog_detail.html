@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://wwww.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Post</title>
+    <link href="../static/homestyles.css" th:href="@{/homestyles.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+    <div>
+        <h1>My Blog Application</h1>
+    </div>
+
+    <div>
+        <a th:href="@{/newpost}">Write New Post</a>
+    </div>
+</div>
+<div class="grid-container">
+    <div th:object="${post}">
+        <div class="grid-item">
+            <div th:text="${post.title}"></div>
+            <br>
+            <span th:text="${post.author}"></span>&nbsp;
+            <span th:text="${post.publishDate}"></span><br>
+            <div th:text="${post.content}"></div><br>
+
+            <div th:each="postTag : ${postTags}">
+                <div th:if="${post.postId}==${postTag.id.postId}">
+                    <div th:each="tag:${tags}">
+                        <div th:if="${postTag.id.tagId}==${tag.tagId}">
+                            <div th:text="${tag.tagName}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
