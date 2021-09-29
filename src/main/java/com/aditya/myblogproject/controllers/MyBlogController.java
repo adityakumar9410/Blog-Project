@@ -31,10 +31,12 @@ public class MyBlogController {
 
     @GetMapping
     public String getAllPosts(Model model) {
-        //model.addAttribute("posts", postService.getAllPost());
-
-        return displayPaginated(1, model);
+        //model.addAttribute("posts", postService.getAllPost())
+        String keyword = null;
+        return getPaginatedAndSorted(1, keyword, "publishDate","asc", model);
     }
+
+
 
     @GetMapping("/post{postId}")
     public String getBlogDetail(@PathVariable("postId") int postId, Model model){
@@ -60,19 +62,31 @@ public class MyBlogController {
         return "redirect:/";
     }
 
+
     @GetMapping("/page/{pageNo}")
-    public String displayPaginated(@PathVariable(value = "pageNo") int pageNo, Model model) {
+    public String getPaginatedAndSorted(@PathVariable(value = "pageNo") int pageNo,
+                                        @RequestParam("keyword")String keyword,
+                                        @RequestParam(value = "sortField" , defaultValue = "publishDate")String sortField,
+                                        @RequestParam (value = "sortDir", defaultValue = "asc") String sortDir , Model model) {
         int pageSize = 10;
-        Page<Post> page = postService.getPaginated(pageNo, pageSize);
+        Page<Post> page = postService.getSortedAndPaginatedData(pageNo,pageSize, keyword,sortField, sortDir);
         List<Post> posts = page.getContent();
 
         model.addAttribute("currPage", pageNo);
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("totalItems", page.getTotalElements());
         model.addAttribute("posts", posts);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("reverseSortDir", sortDir.equals("asc")?"desc":"asc");
+        model.addAttribute("keyword", keyword);
+
         model.addAttribute("postTags", postTagService.getAllPostTags());
+
         model.addAttribute("tags", tagService.getAllTags());
 
         return "home";
     }
+
+
+
 }

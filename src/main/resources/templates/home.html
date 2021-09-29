@@ -14,6 +14,28 @@
     <div>
         <a th:href="@{/newpost}">Write New Post</a>
     </div>
+    <div>
+        <div th:switch="${keyword ==  null}">
+            <p th:case="${true}">
+                <a th:href="@{'/page/' + ${currPage} + '?sortField=publishDate&sortDir=' + ${reverseSortDir}+'&keyword=' +''}">Sort
+                    By Date</a>
+            </p>
+            <p th:case="*">
+                <a th:href="@{'/page/' + ${currPage} + '?sortField=publishDate&sortDir=' + ${reverseSortDir}+'&keyword=' +${keyword}}">Sort
+                    By Date</a>
+            </p>
+        </div>
+
+    </div>
+
+    <div>
+        <form th:action="@{'/page/1'}">
+            <input type="text" name="keyword" placeholder="Search blog "/>
+            <input type="hidden" name="sortField" th:value="${sortField}"/>
+            <input type="hidden" name="sortDir" th:value="${sortDir}"/>
+            <input type="submit" value="Search">
+        </form>
+    </div>
 </div>
 <div class="grid-container">
     <div th:each="post:${posts}">
@@ -22,7 +44,9 @@
             <br>
             <span th:text="${post.author}"></span>&nbsp;
             <span th:text="${post.publishDate}"></span><br>
-            <a  th:href="@{'/post'+${post.postId}}"><div th:text="${post.excerpt}"></div></a>
+            <a th:href="@{'/post'+${post.postId}}">
+                <div th:text="${post.excerpt}"></div>
+            </a>
             <br>
 
             <div th:each="postTag : ${postTags}">
@@ -38,11 +62,23 @@
     </div>
 </div>
 
-  <div th:if="${totalPages>1}">
-      <div  >
-             <a th:if="${currPage>1}" th:href="@{'/page/'+${currPage-1}}">Prev</a><br>
-          <a th:if="${currPage<totalPages}" th:href="@{'/page/'+${currPage+1}}">Next</a>
-      </div>
-  </div>
+
+<div th:if="${totalPages>1}">
+    <div th:switch="${keyword ==  null}">
+        <p th:case="${true}">
+            <a th:if="${currPage>1}"
+               th:href="@{'/page/' + ${currPage-1} + '?sortField=publishDate&sortDir=' + ${sortDir}+'&keyword=' +''}">Prev</a><br>
+            <a th:if="${currPage < totalPages}"
+               th:href="@{'/page/' + ${currPage+1} + '?sortField=publishDate&sortDir=' + ${sortDir}+'&keyword=' +''}">Next</a>
+        </p>
+        <p th:case="*">
+            <a th:if="${currPage>1}"
+               th:href="@{'/page/' + ${currPage-1} + '?sortField=publishDate&sortDir=' + ${sortDir}+'&keyword=' +${keyword}}">Prev</a><br>
+            <a th:if="${currPage < totalPages}"
+               th:href="@{'/page/' + ${currPage+1} + '?sortField=publishDate&sortDir=' + ${sortDir}+ '&keyword='+ ${keyword}}">Next</a>
+        </p>
+    </div>
+
+</div>
 </body>
 </html>

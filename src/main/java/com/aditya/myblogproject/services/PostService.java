@@ -5,6 +5,7 @@ import com.aditya.myblogproject.repositories.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,6 +37,15 @@ public class PostService {
 
     public Page<Post> getPaginated(int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo-1, pageSize);
+        return this.postRepository.findAll(pageable);
+    }
+
+    public Page<Post> getSortedAndPaginatedData(int pageNo, int pageSize, String keyword,String sortField, String sortDir){
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())?Sort.by(sortField).ascending():Sort.by(sortField).descending();
+        Pageable pageable = PageRequest.of(pageNo-1, pageSize, sort);
+        if(keyword!=null){
+            return this.postRepository.findAll(keyword, pageable);
+        }
         return this.postRepository.findAll(pageable);
     }
 }
