@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -69,7 +70,7 @@ public class MyBlogController {
                                         @RequestParam(value = "sortField" , defaultValue = "publishDate")String sortField,
                                         @RequestParam (value = "sortDir", defaultValue = "asc") String sortDir , Model model) {
         int pageSize = 10;
-        Page<Post> page = postService.getSortedAndPaginatedData(pageNo,pageSize, keyword,sortField, sortDir);
+        Page<Post>   page = postService.getSortedAndPaginatedData(pageNo, pageSize, keyword, sortField, sortDir);
         List<Post> posts = page.getContent();
 
         model.addAttribute("currPage", pageNo);
@@ -80,6 +81,8 @@ public class MyBlogController {
         model.addAttribute("reverseSortDir", sortDir.equals("asc")?"desc":"asc");
         model.addAttribute("keyword", keyword);
 
+
+
         model.addAttribute("postTags", postTagService.getAllPostTags());
 
         model.addAttribute("tags", tagService.getAllTags());
@@ -87,6 +90,33 @@ public class MyBlogController {
         return "home";
     }
 
+      @GetMapping("/filter")
+    public  String filterPost( Model model){
+        List<String >authors=new ArrayList<>();
+        return  getFilteredAndPaginated(1, authors, model);
+    }
 
+    @GetMapping( "/filter/pagination/{pageNo}")
+    public String  getFilteredAndPaginated(@PathVariable(value = "pageNo") int pageNo,
+                                         @RequestParam("authChecked") List<String > authChecked,Model model){
+        int pageSize = 10;
+        Page<Post> page = postService.getFilteredAndPaginatedData(pageNo,pageSize, authChecked );
+        int totalPages = page.getTotalPages();
+        int totalItems=(int)page.getTotalElements();
+        List<Post> posts = page.getContent();
+        //System.out.println("Total items are :"+totalItems);
+        model.addAttribute("currPage", pageNo);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalItems", totalItems);
+        model.addAttribute("posts", posts);
+
+        List<String> authorList = postService.getAllUniqueAuthors();
+        //System.out.println(authorList.get(0));
+        model.addAttribute("authors", authorList);
+        model.addAttribute("postTags", postTagService.getAllPostTags());
+        model.addAttribute("tags", tagService.getAllTags());
+
+        return "filter";
+    }
 
 }

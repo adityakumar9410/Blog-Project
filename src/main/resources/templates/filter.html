@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://wwww.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Post</title>
+    <link href="../static/homestyles.css" th:href="@{/homestyles.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+    <div>
+        <h1>My Blog Application</h1>
+    </div>
+
+    <div>
+        <div>
+            <form th:action="@{'/filter/pagination/1'}">
+
+                <table>
+                    <tr>
+                        <td>Filter</td>
+                        <td>
+                               <th:block th:each="author : ${authors}">
+                                   <input type="checkbox" name="authChecked" th:value="${author}"/>
+                                   <label th:text="${author}"></label>
+                               </th:block>
+                        </td>
+                    </tr>
+                </table>
+
+
+                <input type="submit" value="Filter">
+            </form>
+        </div>
+
+    </div>
+
+   <!-- <tr th:each="author: ${authors}">
+        <td>
+            <input type="checkbox" th:text="${author}" name="authChecked" value="${author}"/>
+        </td>
+    </tr>-->
+
+</div>
+<div class="grid-container">
+    <div th:each="post:${posts}">
+        <div class="grid-item">
+            <div th:text="${post.title}"></div>
+            <br>
+            <span th:text="${post.author}"></span>&nbsp;
+            <span th:text="${post.publishDate}"></span><br>
+            <a th:href="@{'/post'+${post.postId}}">
+                <div th:text="${post.excerpt}"></div>
+            </a>
+            <br>
+
+            <div th:each="postTag : ${postTags}">
+                <div th:if="${post.postId}==${postTag.id.postId}">
+                    <div th:each="tag:${tags}">
+                        <div th:if="${postTag.id.tagId}==${tag.tagId}">
+                            <div th:text="${tag.tagName}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

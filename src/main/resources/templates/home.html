@@ -26,6 +26,18 @@
             </p>
         </div>
 
+        <div>
+            <a th:href="@{/filter}">Filter</a>
+        </div>
+       <!-- <div>
+           <form th:action="@{/filter}">
+               <h3>Filter By Author</h3>
+               <div th:each="author:${authors}">
+                   <input type="checkbox" th:text="${author}"  th:name="authChecked" />
+               </div>
+           </form>
+        </div>-->
+
     </div>
 
     <div>
