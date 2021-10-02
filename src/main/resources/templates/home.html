@@ -29,15 +29,6 @@
         <div>
             <a th:href="@{/filter}">Filter</a>
         </div>
-       <!-- <div>
-           <form th:action="@{/filter}">
-               <h3>Filter By Author</h3>
-               <div th:each="author:${authors}">
-                   <input type="checkbox" th:text="${author}"  th:name="authChecked" />
-               </div>
-           </form>
-        </div>-->
-
     </div>
 
     <div>
@@ -61,15 +52,9 @@
             </a>
             <br>
 
-            <div th:each="postTag : ${postTags}">
-                <div th:if="${post.postId}==${postTag.id.postId}">
-                    <div th:each="tag:${tags}">
-                        <div th:if="${postTag.id.tagId}==${tag.tagId}">
-                            <div th:text="${tag.tagName}"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <span th:each="postTag : ${post.tags}">
+                <span th:text="${postTag.tagName}"></span>&nbsp;
+            </span>
         </div>
     </div>
 </div>

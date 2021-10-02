@@ -20,11 +20,27 @@
                     placeholder="Enter Your name"
              ><br>
 
-             <input
-                     type="text"
-                     name="tag"
-                     placeholder="Enter Tag"
-             >
+             <table>
+                 <thead>
+                 <tr>
+                     <th text="Tag Name">Tag Name</th>
+                     <th>
+                         <button type="submit" name="addTag" >Add Tag</button>
+                     </th>
+                 </tr>
+                 </thead>
+                 <tbody>
+                 <tr th:each="tag ,tagStat : *{tags}">
+                     <td>
+                         <input type="text" th:field="*{tags[__${tagStat.index}__].tagName}"  />
+                     </td>
+                     <td>
+                         <button type="submit" name="removeTag"  th:value="${tagStat.index}">Remove Tag</button>
+                     </td>
+                 </tr>
+                 </tbody>
+             </table>
+             <br>
              <textarea
                     name="content"
                     th:field="*{content}"
@@ -32,7 +48,7 @@
                        cols="80"
                     placeholder="Write here"
              ></textarea>
-             <button type="submit">Submit</button>
+             <button type="submit" name="save">Submit</button>
          </form>
       </div>
     </div>

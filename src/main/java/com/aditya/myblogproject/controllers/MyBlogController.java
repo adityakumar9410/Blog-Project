@@ -1,38 +1,35 @@
 package com.aditya.myblogproject.controllers;
 
 import com.aditya.myblogproject.models.Post;
-import com.aditya.myblogproject.models.PostTag;
-import com.aditya.myblogproject.models.PostTagCompositeId;
+
+import com.aditya.myblogproject.models.Tag;
 import com.aditya.myblogproject.services.PostService;
-import com.aditya.myblogproject.services.PostTagService;
 import com.aditya.myblogproject.services.TagService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
 @RequestMapping("/")
 public class MyBlogController {
-
     private final PostService postService;
     private final TagService tagService;
-    private final PostTagService postTagService;
 
 
-    public MyBlogController(PostService postService, TagService tagService, PostTagService postTagService) {
+
+    public MyBlogController(PostService postService, TagService tagService) {
         this.postService = postService;
         this.tagService = tagService;
-        this.postTagService = postTagService;
     }
 
     @GetMapping
     public String getAllPosts(Model model) {
-        //model.addAttribute("posts", postService.getAllPost())
         String keyword = null;
         return getPaginatedAndSorted(1, keyword, "publishDate","asc", model);
     }
@@ -42,24 +39,37 @@ public class MyBlogController {
     @GetMapping("/post{postId}")
     public String getBlogDetail(@PathVariable("postId") int postId, Model model){
         model.addAttribute("post", postService.getById(postId));
-        model.addAttribute("postTags", postTagService.getAllPostTags());
+        //model.addAttribute("postTags", postTagService.getAllPostTags());
         model.addAttribute("tags", tagService.getAllTags());
         return "blog_detail";
     }
 
     @GetMapping("/newpost")
     public String createBlogForm(Model model) {
-        model.addAttribute("newPost", new Post());
+        Post post = new Post();
+        model.addAttribute("newPost", post);
         return "blog_form";
     }
 
-    @PostMapping("/newpost")
-    public String savePost(@RequestParam(name = "tag") String tag, @ModelAttribute("newBlog") Post post) {
-        Integer tagId = tagService.saveTags(tag).getTagId();
-        Integer postId = postService.savePost(post).getPostId();
-        PostTag postTag = new PostTag(new PostTagCompositeId(postId, tagId));
-        postTagService.savePostTag(postTag);
+    @PostMapping(value = "/newpost", params = {"addTag"})
+    public String addTag( final Post post , BindingResult bindingResult, Model model) {
+            post.getTags().add(new Tag());
+            model.addAttribute("newPost", post);
+        return "blog_form";
+    }
 
+    @PostMapping(value="/newpost", params={"removeTag"})
+    public String removeRow(final Post post, BindingResult bindingResult, final HttpServletRequest req, Model model) {
+        final Integer tagId = Integer.valueOf(req.getParameter("removeTag"));
+        post.getTags().remove(tagId.intValue());
+        model.addAttribute("newPost", post);
+        return "blog_form";
+    }
+
+    @PostMapping(value = "/newpost" , params = {"save"})
+    public String savePost( @ModelAttribute("newPost") Post post, BindingResult bindingResult) {
+
+        this.postService.savePost(post);
         return "redirect:/";
     }
 
@@ -81,11 +91,7 @@ public class MyBlogController {
         model.addAttribute("reverseSortDir", sortDir.equals("asc")?"desc":"asc");
         model.addAttribute("keyword", keyword);
 
-
-
-        model.addAttribute("postTags", postTagService.getAllPostTags());
-
-        model.addAttribute("tags", tagService.getAllTags());
+       // model.addAttribute("tags", tagService.getAllTags());
 
         return "home";
     }
@@ -113,8 +119,8 @@ public class MyBlogController {
         List<String> authorList = postService.getAllUniqueAuthors();
         //System.out.println(authorList.get(0));
         model.addAttribute("authors", authorList);
-        model.addAttribute("postTags", postTagService.getAllPostTags());
-        model.addAttribute("tags", tagService.getAllTags());
+        //model.addAttribute("postTags", postTagService.getAllPostTags());
+        //model.addAttribute("tags", tagService.getAllTags());
 
         return "filter";
     }

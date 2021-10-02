@@ -1,6 +1,8 @@
 package com.aditya.myblogproject.models;
 
 import javax.persistence.*;
+import javax.xml.crypto.Data;
+import java.util.*;
 
 
 @Entity
@@ -10,24 +12,26 @@ public class Tag {
     @Column(name = "tag_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int tagId;
-    @Column(name = "tag_name", unique = true)
+    @Column(name = "tag_name")
     private String tagName;
     @Column(name = "created_at")
-    private  String createDate;
+    private Date createDate = new Date();
     @Column(name = "updated_at")
-    private  String updateDate;
+    private  Date updateDate = new Date();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "tags")
+    private List<Post>posts = new ArrayList<>();
 
     public Tag() {
     }
 
-    public Tag(int tagId, String tagName, String createDate, String updateDate) {
+    public Tag(int tagId, String tagName, Date createDate, Date updateDate, List<Post> posts) {
         this.tagId = tagId;
         this.tagName = tagName;
         this.createDate = createDate;
         this.updateDate = updateDate;
+        this.posts = posts;
     }
-
-
 
     public int getTagId() {
         return tagId;
@@ -45,19 +49,27 @@ public class Tag {
         this.tagName = tagName;
     }
 
-    public String getCreateDate() {
+    public Date getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(String createDate) {
+    public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
-    public String getUpdateDate() {
+    public Date getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(String updateDate) {
+    public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
     }
 }

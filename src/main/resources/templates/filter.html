@@ -14,7 +14,6 @@
     <div>
         <div>
             <form th:action="@{'/filter/pagination/1'}">
-
                 <table>
                     <tr>
                         <td>Filter</td>
@@ -26,19 +25,12 @@
                         </td>
                     </tr>
                 </table>
-
-
                 <input type="submit" value="Filter">
             </form>
         </div>
 
     </div>
 
-   <!-- <tr th:each="author: ${authors}">
-        <td>
-            <input type="checkbox" th:text="${author}" name="authChecked" value="${author}"/>
-        </td>
-    </tr>-->
 
 </div>
 <div class="grid-container">
@@ -52,16 +44,9 @@
                 <div th:text="${post.excerpt}"></div>
             </a>
             <br>
-
-            <div th:each="postTag : ${postTags}">
-                <div th:if="${post.postId}==${postTag.id.postId}">
-                    <div th:each="tag:${tags}">
-                        <div th:if="${postTag.id.tagId}==${tag.tagId}">
-                            <div th:text="${tag.tagName}"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <span th:each="postTag : ${post.tags}">
+                <span th:text="${postTag.tagName}"></span>&nbsp;
+            </span>
         </div>
     </div>
 </div>

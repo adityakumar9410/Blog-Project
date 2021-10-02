@@ -2,7 +2,7 @@ package com.aditya.myblogproject.models;
 
 import javax.persistence.*;
 
-import java.util.Date;
+import java.util.*;
 
 
 @Entity
@@ -31,20 +31,31 @@ public class Post {
     private boolean isPublished;
 
     @Column(name = "published_at")
-    private Date publishDate = new Date(System.currentTimeMillis());
+    private Date publishDate = new Date();
 
 
     @Column(name = "created_at")
-    private Date createDate = new Date(System.currentTimeMillis());
+    private Date createDate = new Date();
 
     @Column(name = "updated_at")
-    private Date updateDate = new Date((System.currentTimeMillis()));
+    private Date updateDate = new Date();
+
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "post_tags",
+            joinColumns = {@JoinColumn(name = "post_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    private List<Tag> tags= new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "post")
+    List<Comment> comments;
 
     public Post() {
     }
 
-    public Post(int postId, String title, String author, String excerpt, String content, boolean isPublished, Date publishDate,
-                Date createDate, Date updateDate) {
+    public Post(int postId, String title, String author, String excerpt, String content, boolean isPublished,
+                Date publishDate, Date createDate, Date updateDate, List<Tag> tags, List<Comment> comments) {
         this.postId = postId;
         this.title = title;
         this.author = author;
@@ -54,6 +65,8 @@ public class Post {
         this.publishDate = publishDate;
         this.createDate = createDate;
         this.updateDate = updateDate;
+        this.tags = tags;
+        this.comments = comments;
     }
 
     public int getPostId() {
@@ -126,5 +139,22 @@ public class Post {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }
