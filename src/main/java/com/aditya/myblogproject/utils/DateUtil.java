@@ -9,12 +9,15 @@ import java.util.Date;
 public class DateUtil {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-    public  static String getCurrentDateTime(){
-        Date date = Calendar.getInstance().getTime();
+    public  static String getDateStringFromDate(Date date){
         return DATE_FORMAT.format(date);
     }
 
-    public static Date createDateFromDateString(String dateString){
+    public static String getCurrentInstanceOfDate(){
+        Date date = Calendar.getInstance().getTime();
+        return DATE_FORMAT.format(date);
+    }
+    public static Date getDateFromDateString(String dateString){
         Date date = null;
         if(null != dateString){
             try{

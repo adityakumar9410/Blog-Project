@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.Set;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
@@ -17,7 +18,11 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Post>findAll(String keyword, Pageable pageable);
 
     @Transactional
-    @Query("SELECT p FROM Post p WHERE p.author IN :authors")
-    Page<Post>findPostsByAuthors(@Param("authors")Set<String>authors, Pageable pageable);
+    @Query("SELECT p FROM Post p WHERE p.author IN :authors ")
+    Page<Post>findPostsByAuthors(@Param("authors")Set<String>authors,  Pageable pageable);
+
+    @Transactional
+    @Query("SELECT p FROM Post p WHERE  p.publishDate IN :dates")
+    Page<Post>findPostsByDates(@Param("dates")Set<Date>publishDates, Pageable pageable);
 
 }

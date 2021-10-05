@@ -1,10 +1,11 @@
 package com.aditya.myblogproject.models;
 
 import javax.persistence.*;
-;
+import java.util.Collection;
+
 
 @Entity
-@Table(name="blog_users")
+@Table(name="blog_users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
     @Id
     @Column(name = "user_id")
@@ -17,17 +18,22 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id"))
+    private Collection<Role>roles;
 
     public User() {
     }
 
-
-
-    public User(int userId, String userName, String email, String password) {
+    public User(int userId, String userName, String email, String password, Collection<Role> roles) {
         this.userId = userId;
         this.userName = userName;
         this.email = email;
         this.password = password;
+        this.roles = roles;
     }
 
     public int getUserId() {
@@ -60,5 +66,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://wwww.thymeleaf.org">
+<html lang="en" xmlns:th="http://wwww.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8">
     <title>Blog Post</title>
@@ -12,6 +13,10 @@
     </div>
 
     <div>
+        <a th:href="@{/login}">Log In</a>
+    </div>
+      <span sec:authorise="isAuthenticated()"><a th:href="@{/logout}">Logout</a></span>
+    <div>
         <a th:href="@{/newpost}">Write New Post</a>
     </div>
     <div>
@@ -21,7 +26,7 @@
                     By Date</a>
             </p>
             <p th:case="*">
-                <a th:href="@{'/page/' + ${currPage} + '?sortField=publishDate&sortDir=' + ${reverseSortDir}+'&keyword=' +${keyword}}">Sort
+                <a th:href="@{'/page/'+ ${currPage} + '?sortField=publishDate&sortDir=' + ${reverseSortDir}+'&keyword=' +${keyword}}">Sort
                     By Date</a>
             </p>
         </div>

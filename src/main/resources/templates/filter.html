@@ -16,12 +16,30 @@
             <form th:action="@{'/filter/pagination/1'}">
                 <table>
                     <tr>
-                        <td>Filter</td>
+                        <td>Filter by Author</td>
                         <td>
                                <th:block th:each="author : ${authors}">
                                    <input type="checkbox" name="authChecked" th:value="${author}"/>
                                    <label th:text="${author}"></label>
                                </th:block>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Filter by Publish Date</td>
+                        <td>
+                            <th:block th:each="date : ${publishDates}">
+                                <input type="checkbox" name="dateChecked" th:value="${date}"/>
+                                <label th:text="${date}"></label>
+                            </th:block>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Filter by Tags</td>
+                        <td>
+                            <th:block th:each="tag : ${tags}">
+                                <input type="checkbox" name="tagsChecked" th:value="${tag}"/>
+                                <label th:text="${tag}"></label>
+                            </th:block>
                         </td>
                     </tr>
                 </table>

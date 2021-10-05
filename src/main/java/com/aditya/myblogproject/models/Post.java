@@ -31,14 +31,14 @@ public class Post {
     private boolean isPublished;
 
     @Column(name = "published_at")
-    private Date publishDate = new Date();
+    private Date publishDate = null;
 
 
     @Column(name = "created_at")
-    private Date createDate = new Date();
+    private Date createDate = null;
 
     @Column(name = "updated_at")
-    private Date updateDate = new Date();
+    private Date updateDate = null;
 
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

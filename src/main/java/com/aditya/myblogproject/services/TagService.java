@@ -5,7 +5,10 @@ import com.aditya.myblogproject.repositories.TagRepository;
 import org.apache.catalina.LifecycleState;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TagService {
@@ -16,17 +19,19 @@ public class TagService {
     }
 
 
-    public Tag saveTags(String blogTag) {
-        Tag tag = new Tag();
-        tag.setTagName(blogTag);
-        Tag tag1 = tagRepository.findByTagName(blogTag);
-        if (tag1==null){
-            return tagRepository.save(tag);
-        }
 
-       return tag1;
-    }
      public List<Tag>getAllTags(){
         return tagRepository.findAll();
+    }
+
+    public List<String>getAllUniqueTags(){
+        List<Tag>tags= this.tagRepository.findAll();
+        Set<String>uniqueTags= new HashSet<>();
+        for(Tag tag:tags){
+            if(!(uniqueTags.contains(tag.getTagName()))){
+                uniqueTags.add(tag.getTagName());
+            }
+        }
+        return new ArrayList<>(uniqueTags);
     }
 }

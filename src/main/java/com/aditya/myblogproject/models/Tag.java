@@ -15,9 +15,9 @@ public class Tag {
     @Column(name = "tag_name")
     private String tagName;
     @Column(name = "created_at")
-    private Date createDate = new Date();
+    private Date createDate = null;
     @Column(name = "updated_at")
-    private  Date updateDate = new Date();
+    private  Date updateDate = null;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "tags")
     private List<Post>posts = new ArrayList<>();

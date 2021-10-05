@@ -4,5 +4,6 @@ import com.aditya.myblogproject.models.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TagRepository extends JpaRepository<Tag, Integer> {
-    public Tag findByTagName(String name);
+     Tag findByTagName(String name);
+
 }

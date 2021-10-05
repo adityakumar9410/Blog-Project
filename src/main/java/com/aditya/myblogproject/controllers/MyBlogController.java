@@ -5,6 +5,7 @@ import com.aditya.myblogproject.models.Post;
 import com.aditya.myblogproject.models.Tag;
 import com.aditya.myblogproject.services.PostService;
 import com.aditya.myblogproject.services.TagService;
+import com.aditya.myblogproject.utils.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -32,6 +35,11 @@ public class MyBlogController {
     public String getAllPosts(Model model) {
         String keyword = null;
         return getPaginatedAndSorted(1, keyword, "publishDate","asc", model);
+    }
+
+    @GetMapping("/login")
+    public String showLoginForm(){
+        return "login";
     }
 
 
@@ -69,10 +77,18 @@ public class MyBlogController {
     @PostMapping(value = "/newpost" , params = {"save"})
     public String savePost( @ModelAttribute("newPost") Post post, BindingResult bindingResult) {
 
+        String dateString = DateUtil.getCurrentInstanceOfDate();
+        Date date  = DateUtil.getDateFromDateString(dateString);
+        post.setPublishDate(date);
+        List<Tag> tags= post.getTags();
+        for(Tag tag : tags){
+
+            tag.setCreateDate(date);
+        }
+        post.setTags(tags);
         this.postService.savePost(post);
         return "redirect:/";
     }
-
 
     @GetMapping("/page/{pageNo}")
     public String getPaginatedAndSorted(@PathVariable(value = "pageNo") int pageNo,
@@ -91,36 +107,46 @@ public class MyBlogController {
         model.addAttribute("reverseSortDir", sortDir.equals("asc")?"desc":"asc");
         model.addAttribute("keyword", keyword);
 
-       // model.addAttribute("tags", tagService.getAllTags());
-
         return "home";
     }
 
-      @GetMapping("/filter")
+    @GetMapping("/filter")
     public  String filterPost( Model model){
-        List<String >authors=new ArrayList<>();
-        return  getFilteredAndPaginated(1, authors, model);
+
+        return  getFilteredAndPaginated(1, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),model);
     }
 
     @GetMapping( "/filter/pagination/{pageNo}")
     public String  getFilteredAndPaginated(@PathVariable(value = "pageNo") int pageNo,
-                                         @RequestParam("authChecked") List<String > authChecked,Model model){
+                                         @RequestParam("authChecked") List<String > authChecked,
+                                         @RequestParam("dateChecked") List<String > dateChecked,
+                                           @RequestParam("tagsChecked") List<String > tagsChecked,Model model){
         int pageSize = 10;
-        Page<Post> page = postService.getFilteredAndPaginatedData(pageNo,pageSize, authChecked );
-        int totalPages = page.getTotalPages();
-        int totalItems=(int)page.getTotalElements();
-        List<Post> posts = page.getContent();
-        //System.out.println("Total items are :"+totalItems);
+        if(authChecked ==null){
+            authChecked = new ArrayList<>();
+        }
+        if(dateChecked==null){
+            dateChecked=new ArrayList<>();
+        }
+        if(tagsChecked==null){
+            tagsChecked=new ArrayList<>();
+        }
+        List<Post> posts = postService.getFilteredAndPaginatedData(pageNo,pageSize, authChecked, dateChecked, tagsChecked );
+        int totalItems= posts.size();
+        int totalPages =(int) Math.ceil((totalItems*1.0)/pageSize);
         model.addAttribute("currPage", pageNo);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalItems", totalItems);
         model.addAttribute("posts", posts);
 
         List<String> authorList = postService.getAllUniqueAuthors();
-        //System.out.println(authorList.get(0));
         model.addAttribute("authors", authorList);
-        //model.addAttribute("postTags", postTagService.getAllPostTags());
-        //model.addAttribute("tags", tagService.getAllTags());
+
+        List<String>postDates = postService.getUniquePublishDates();
+        model.addAttribute("publishDates",postDates);
+
+        List<String>tags= tagService.getAllUniqueTags();
+        model.addAttribute("tags", tags);
 
         return "filter";
     }
