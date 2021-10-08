@@ -1,4 +1,4 @@
-package com.aditya.myblogproject.models;
+package com.aditya.myblogproject.model;
 
 import javax.persistence.*;
 
@@ -30,7 +30,7 @@ public class Post {
     @Column(name = "is_published")
     private boolean isPublished;
 
-    @Column(name = "published_at")
+    @Column(name = "published_at" , updatable = false)
     private Date publishDate = null;
 
 
@@ -47,15 +47,16 @@ public class Post {
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private List<Tag> tags= new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+     @JoinColumn(name = "post_id" , referencedColumnName = "post_id")
+    List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
-    List<Comment> comments;
 
     public Post() {
     }
 
     public Post(int postId, String title, String author, String excerpt, String content, boolean isPublished,
-                Date publishDate, Date createDate, Date updateDate, List<Tag> tags, List<Comment> comments) {
+                Date publishDate, Date createDate, Date updateDate, List<Tag> tags) {
         this.postId = postId;
         this.title = title;
         this.author = author;
@@ -66,6 +67,13 @@ public class Post {
         this.createDate = createDate;
         this.updateDate = updateDate;
         this.tags = tags;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
 
@@ -139,15 +147,6 @@ public class Post {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
-    }
-
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
     }
 
     public List<Tag> getTags() {

@@ -1,4 +1,4 @@
-package com.aditya.myblogproject.models;
+package com.aditya.myblogproject.model;
 
 import javax.persistence.*;
 import java.util.Collection;

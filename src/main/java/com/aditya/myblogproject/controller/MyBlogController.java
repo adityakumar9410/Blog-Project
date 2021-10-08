@@ -1,0 +1,215 @@
+package com.aditya.myblogproject.controller;
+
+import com.aditya.myblogproject.model.Comment;
+import com.aditya.myblogproject.model.Post;
+
+import com.aditya.myblogproject.model.Tag;
+import com.aditya.myblogproject.service.CommentService;
+import com.aditya.myblogproject.service.PostService;
+import com.aditya.myblogproject.service.TagService;
+import com.aditya.myblogproject.utils.DateUtil;
+import org.dom4j.rule.Mode;
+import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Controller
+@RequestMapping("/")
+public class MyBlogController {
+    private final PostService postService;
+    private final TagService tagService;
+    private final CommentService commentService;
+
+
+
+    public MyBlogController(PostService postService, TagService tagService, CommentService commentService) {
+        this.postService = postService;
+        this.tagService = tagService;
+        this.commentService = commentService;
+
+    }
+
+    @GetMapping
+    public String getHomePage(Model model) {
+        return showByPage(1,"publishDate","asc", "",model);
+    }
+
+    @GetMapping("/page/{pageNo}")
+    public String showByPage(@PathVariable(value = "pageNo" ) int pageNo, @RequestParam(value = "sortField" ,defaultValue = "publishDate")String sortField,
+                            @RequestParam(value = "sortDir", defaultValue = "asc")String sortDir, @RequestParam("keyword" )String keyword, Model model) {
+        int pageSize = 4;
+        Page<Post> page = postService.getAllPaginatedPostData(pageNo, pageSize, sortField,sortDir, keyword);
+        List<Post> posts = page.getContent();
+
+        model.addAttribute("currPage", pageNo);
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalItems", page.getTotalElements());
+        model.addAttribute("posts", posts);
+
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
+        model.addAttribute("keyword", keyword);
+        return "home";
+    }
+
+    @GetMapping("/login")
+    public String showLoginForm() {
+        return "login";
+    }
+
+
+    @GetMapping("/post{postId}")
+    public String getBlogDetail(@PathVariable("postId") int postId, Model model) {
+        model.addAttribute("post", postService.getById(postId));
+        model.addAttribute("tags", tagService.getAllTags());
+        return "blog_detail";
+    }
+
+    @GetMapping("/newpost")
+    public String createBlogForm(Model model) {
+        Post post = new Post();
+        model.addAttribute("newPost", post);
+        return "blog_form";
+    }
+
+    @PostMapping(value = "/newpost", params = {"addTag"})
+    public String addTag(final Post post, BindingResult bindingResult, Model model) {
+        post.getTags().add(new Tag());
+        model.addAttribute("newPost", post);
+        return "blog_form";
+    }
+
+    @PostMapping(value = "/newpost", params = {"removeTag"})
+    public String removeTag(final Post post, BindingResult bindingResult, final HttpServletRequest req, Model model) {
+        final Integer tagId = Integer.valueOf(req.getParameter("removeTag"));
+        post.getTags().remove(tagId.intValue());
+        model.addAttribute("newPost", post);
+        return "blog_form";
+    }
+
+    @PostMapping(value = "/newpost", params = {"save"})
+    public String savePost(@ModelAttribute("newPost") Post post, BindingResult bindingResult) {
+        String dateString = DateUtil.getCurrentInstanceOfDate();
+        Date date = DateUtil.getDateFromDateString(dateString);
+        post.setPublishDate(date);
+        post.setPublished(true);
+        List<Tag> tags = post.getTags();
+        for (Tag tag : tags) {
+
+            tag.setCreateDate(date);
+        }
+        post.setTags(tags);
+        this.postService.savePost(post);
+        return "redirect:/";
+    }
+
+
+
+    @GetMapping("/filter")
+    public String filterPost(Model model) {
+
+        return getFilteredAndPaginated(1, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), model);
+    }
+
+    @GetMapping("/filter/pagination/{pageNo}")
+    public String getFilteredAndPaginated(@PathVariable(value = "pageNo") int pageNo,
+                                          @RequestParam(value = "authChecked", defaultValue = "{}") List<String> authChecked,
+                                          @RequestParam(value = "dateChecked", defaultValue = "{}") List<String> dateChecked,
+                                          @RequestParam(value = "tagsChecked" , defaultValue = "{}") List<String> tagsChecked, Model model) {
+        int pageSize = 10;
+        if (authChecked == null) {
+            authChecked = new ArrayList<>();
+        }
+        if (dateChecked == null) {
+            dateChecked = new ArrayList<>();
+        }
+        if (tagsChecked == null) {
+            tagsChecked = new ArrayList<>();
+        }
+        List<Post> posts = postService.getFilteredAndPaginatedData(pageNo, pageSize, authChecked, dateChecked, tagsChecked);
+        int totalItems = posts.size();
+        int totalPages = (int) Math.ceil((totalItems * 1.0) / pageSize);
+        model.addAttribute("currPage", pageNo);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalItems", totalItems);
+        model.addAttribute("posts", posts);
+
+        List<String> authorList = postService.getAllUniqueAuthors();
+        model.addAttribute("authors", authorList);
+
+        List<String> postDates = postService.getUniquePublishDates();
+        model.addAttribute("publishDates", postDates);
+
+        List<String> tags = tagService.getAllUniqueTags();
+        model.addAttribute("tags", tags);
+
+        return "filter";
+    }
+
+    @GetMapping("/deletePost/{id}")
+    public String deleteBlogPost(@PathVariable(value = "id") Integer id){
+        this.postService.deletePost(id);
+
+        /*this.commentService.deleteCommentsByPostId(id);*/
+
+        return "redirect:/";
+    }
+
+
+    @GetMapping("/comment/{id}")
+    public String showComments(@PathVariable(value = "id") Integer id, Model model){
+
+        Post post = postService.getById(id);
+        model.addAttribute("post", post);
+
+        return "post_comment";
+    }
+
+    @PostMapping("/comment/{id}")
+    public String saveComment(@PathVariable(value = "id") Integer id,@RequestParam("comment") String cmt, @RequestParam("username")String username){
+        String dateString = DateUtil.getCurrentInstanceOfDate();
+        Date date  = DateUtil.getDateFromDateString(dateString);
+        Post post = postService.getById(id);
+        Comment comment = new Comment();
+        comment.setComment(cmt);
+        comment.setUserName(username);
+        comment.setCreateDate(date);
+        post.getComments().add(comment);
+        this.postService.savePost(post);
+        return "redirect:/";
+    }
+
+    @GetMapping("/editComment/{cmtId}")
+    public String  getEditCommentForm(@PathVariable(value = "cmtId")Integer cmtId,  Model model){
+
+        Comment comment =  commentService.getCommentById(cmtId);
+
+        model.addAttribute("cmtObj", comment);
+        return "edit_comment";
+    }
+
+    @PostMapping("/editComment")
+    public String editComment(@ModelAttribute("cmtObj") Comment comment){
+        String dateString = DateUtil.getCurrentInstanceOfDate();
+        Date date = DateUtil.getDateFromDateString(dateString);
+        comment.setUpdateDate(date);
+        commentService.saveComment(comment);
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/deleteComment/{cmtId}")
+    public String deleteComment(@PathVariable(value = "cmtId")Integer cmtId){
+        this.commentService.deleteCommentById(cmtId);
+        return "redirect:/";
+    }
+
+}

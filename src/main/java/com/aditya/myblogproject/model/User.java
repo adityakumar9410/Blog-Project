@@ -1,4 +1,4 @@
-package com.aditya.myblogproject.models;
+package com.aditya.myblogproject.model;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class User {
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id"))
-    private Collection<Role>roles;
+    private Collection<Role>roles ;
 
     public User() {
     }

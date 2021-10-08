@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://wwww.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Post</title>
+    <link href="../static/homestyles.css" th:href="@{/homestyles.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+    <div>
+        <h1>My Blog Application</h1>
+    </div>
+
+</div>
+<div class="grid-container">
+    <h2>Comments : </h2><br>
+    <table>
+        <tr th:each="comment : ${post.comments}">
+            <td>
+                <div th:text="${comment.comment}"><br>
+                </div>
+                <h4>Comment By :</h4>
+                <span th:text="${comment.userName}">
+                </span>
+                <span>
+                        <a th:href="@{/editComment/{cmtId}(cmtId=${comment.commentId})}">EDIT</a>
+                </span>&nbsp;&nbsp;
+                <span>
+                        <a th:href="@{/deleteComment/{cmtId}(cmtId=${comment.commentId})}">DELETE</a>
+                </span>
+            </td>
+        </tr>
+    </table>
+</div>
+<form th:action="@{/comment/{id}(id=${post.postId})}" method="post">
+    <input type="text" name="username" placeholder="Enter name for commenting"><br>
+    <textarea
+                name="comment"
+                rows="20"
+                cols="80"
+                placeholder="Write Comment"
+    ></textarea><br>
+    <button type="submit">Add Comment</button>
+</form>
+</body>
+</html>

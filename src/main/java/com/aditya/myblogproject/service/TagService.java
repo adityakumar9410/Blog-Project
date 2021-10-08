@@ -1,8 +1,7 @@
-package com.aditya.myblogproject.services;
+package com.aditya.myblogproject.service;
 
-import com.aditya.myblogproject.models.Tag;
-import com.aditya.myblogproject.repositories.TagRepository;
-import org.apache.catalina.LifecycleState;
+import com.aditya.myblogproject.model.Tag;
+import com.aditya.myblogproject.repository.TagRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,17 +17,15 @@ public class TagService {
         this.tagRepository = tagRepository;
     }
 
-
-
-     public List<Tag>getAllTags(){
+    public List<Tag> getAllTags() {
         return tagRepository.findAll();
     }
 
-    public List<String>getAllUniqueTags(){
-        List<Tag>tags= this.tagRepository.findAll();
-        Set<String>uniqueTags= new HashSet<>();
-        for(Tag tag:tags){
-            if(!(uniqueTags.contains(tag.getTagName()))){
+    public List<String> getAllUniqueTags() {
+        List<Tag> tags = this.tagRepository.findAll();
+        Set<String> uniqueTags = new HashSet<>();
+        for (Tag tag : tags) {
+            if (!(uniqueTags.contains(tag.getTagName()))) {
                 uniqueTags.add(tag.getTagName());
             }
         }

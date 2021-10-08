@@ -1,7 +1,7 @@
-package com.aditya.myblogproject.controllers;
+package com.aditya.myblogproject.controller;
 
-import com.aditya.myblogproject.models.User;
-import com.aditya.myblogproject.services.UserService;
+import com.aditya.myblogproject.model.User;
+import com.aditya.myblogproject.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -18,3 +18,11 @@ body{
 .container{
     margin: 25px;
 }
+
+td{
+    padding: 25px;
+}
+
+form{
+    padding: 25px;
+}

@@ -1,8 +1,8 @@
-package com.aditya.myblogproject.services;
+package com.aditya.myblogproject.service;
 
-import com.aditya.myblogproject.models.Role;
-import com.aditya.myblogproject.models.User;
-import com.aditya.myblogproject.repositories.UserRepository;
+import com.aditya.myblogproject.model.Role;
+import com.aditya.myblogproject.model.User;
+import com.aditya.myblogproject.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
@@ -28,7 +27,8 @@ public class UserService implements UserDetailsService {
     }
 
     public User  saveUser(User user){
-        user.setRoles(Arrays.asList(new Role("ROLE_USER")));
+       user.setRoles(Arrays.asList(new Role("ROLE_USER")));
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }

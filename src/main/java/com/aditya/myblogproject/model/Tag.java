@@ -1,7 +1,8 @@
-package com.aditya.myblogproject.models;
+package com.aditya.myblogproject.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import javax.xml.crypto.Data;
 import java.util.*;
 
 
@@ -19,8 +20,11 @@ public class Tag {
     @Column(name = "updated_at")
     private  Date updateDate = null;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "tags")
     private List<Post>posts = new ArrayList<>();
+
+
 
     public Tag() {
     }

@@ -7,15 +7,17 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateUtil {
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public  static String getDateStringFromDate(Date date){
         return DATE_FORMAT.format(date);
     }
 
     public static String getCurrentInstanceOfDate(){
-        Date date = Calendar.getInstance().getTime();
-        return DATE_FORMAT.format(date);
+       /*Calendar calendar = Calendar.getInstance();
+       calendar.set(Calendar.HOUR, 12);*/
+
+        return DATE_FORMAT.format(new Date());
     }
     public static Date getDateFromDateString(String dateString){
         Date date = null;

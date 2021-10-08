@@ -1,6 +1,6 @@
 package com.aditya.myblogproject.config;
 
-import com.aditya.myblogproject.services.UserService;
+import com.aditya.myblogproject.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,9 +38,12 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers(
-                "/registration", "/", "/homestyles.css","/newpost","/post**","/post/**"
+        http.csrf().disable().authorizeRequests()
+                .antMatchers(
+                "/registration", "/**","/", "/homestyles.css", "/deleteComment/**","/editComment/**","/newpost","/page/**","/post**","/post/**","/api/**","/comment/**","/api/posts","/login"
                 ).permitAll()
+                .antMatchers("/updatePost/**","/deletePost/**").hasAuthority("ADMIN")
+                .requestMatchers(req->req.getRequestURI().equals("page")).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -52,6 +55,8 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
                 .clearAuthentication(true)
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/login?logout")
-                .permitAll();
+                .permitAll()
+                .and()
+                .exceptionHandling().accessDeniedPage("/403");
     }
 }

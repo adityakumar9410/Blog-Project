@@ -1,6 +1,9 @@
-package com.aditya.myblogproject.models;
+package com.aditya.myblogproject.model;
+
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "comments")
@@ -13,36 +16,26 @@ public class Comment {
     private String userName;
     @Column(name = "email")
     private String email;
-    @Column(name = "comment")
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "comment" , columnDefinition = "TEXT")
     private String comment;
 
-    @Column(name = "created_at")
-    private String  createDate;
+    @Column(name = "created_at",  updatable = false)
+    private Date createDate=null;
     @Column(name = "updated_at")
-    private  String updateDate;
+    private  Date  updateDate= null;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
     public Comment() {
     }
 
-    public Comment(int commentId, String userName, String email, String comment, Post post, String createDate, String updateDate) {
+    public Comment(int commentId, String userName, String email, String comment, Date createDate, Date updateDate) {
         this.commentId = commentId;
         this.userName = userName;
         this.email = email;
         this.comment = comment;
-        this.post = post;
         this.createDate = createDate;
         this.updateDate = updateDate;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
     }
 
     public int getCommentId() {
@@ -77,20 +70,20 @@ public class Comment {
         this.comment = comment;
     }
 
-
-    public String getCreateDate() {
+    public Date getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(String createDate) {
+    public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
-    public String getUpdateDate() {
+    public Date getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(String updateDate) {
+    public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
+
 }

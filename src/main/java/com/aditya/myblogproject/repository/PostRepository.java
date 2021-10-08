@@ -1,6 +1,6 @@
-package com.aditya.myblogproject.repositories;
+package com.aditya.myblogproject.repository;
 
-import com.aditya.myblogproject.models.Post;
+import com.aditya.myblogproject.model.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +14,7 @@ import java.util.Set;
 public interface PostRepository extends JpaRepository<Post, Integer> {
     @Transactional
     @Query("SELECT p FROM Post p WHERE "+
-    "CONCAT(p.title, p.author, p.publishDate, p.content, p.excerpt)"+" LIKE  %?1%")
+    "CONCAT(p.title, ' ' , p.author, ' ', p.publishDate, ' ' ,p.content, ' ' , p.excerpt)"+"  LIKE  %?1%")
     Page<Post>findAll(String keyword, Pageable pageable);
 
     @Transactional
@@ -25,4 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("SELECT p FROM Post p WHERE  p.publishDate IN :dates")
     Page<Post>findPostsByDates(@Param("dates")Set<Date>publishDates, Pageable pageable);
 
+    @Transactional
+    @Query("SELECT p FROM Post p WHERE  p.postId = :postId")
+    Post  findPostById(@Param("postId")int postId);
 }

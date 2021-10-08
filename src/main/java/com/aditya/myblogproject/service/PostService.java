@@ -1,9 +1,10 @@
-package com.aditya.myblogproject.services;
+package com.aditya.myblogproject.service;
 
-import com.aditya.myblogproject.models.Post;
-import com.aditya.myblogproject.models.Tag;
-import com.aditya.myblogproject.repositories.PostRepository;
-import com.aditya.myblogproject.repositories.TagRepository;
+import com.aditya.myblogproject.exception.ResourceNotFoundException;
+import com.aditya.myblogproject.model.Post;
+import com.aditya.myblogproject.model.Tag;
+import com.aditya.myblogproject.repository.PostRepository;
+import com.aditya.myblogproject.repository.TagRepository;
 import com.aditya.myblogproject.utils.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,17 +32,35 @@ public class PostService {
         return postRepository.save(post);
     }
 
+
     public Post getById(Integer id) {
 
-        return postRepository.findById(id).get();
+        return this.postRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Post", "id", id));
     }
 
+    public Post updatePost(Post post, int id){
+        Post currentPost = this.postRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Post", "id", id));
+        currentPost.setTitle(post.getTitle());
+        currentPost.setContent(post.getContent());
+        currentPost.setAuthor(post.getAuthor());
+        postRepository.save(currentPost);
+        return currentPost;
+    }
+
+    public void deletePostById(int postId){
+        postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post", "postId", postId));
+        postRepository.deleteById(postId);
+    }
+
+    public void deletePost(int id){
+        this.postRepository.deleteById(id);
+    }
     public Page<Post> getPaginated(int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         return this.postRepository.findAll(pageable);
     }
 
-    public Page<Post> getSortedAndPaginatedData(int pageNo, int pageSize, String keyword, String sortField, String sortDir) {
+    public Page<Post> getAllPaginatedPostData(int pageNo, int pageSize, String sortField, String sortDir, String keyword) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
         if (keyword != null) {
@@ -122,17 +141,5 @@ public class PostService {
             }
         }
         return new ArrayList<>(publishDates);
-
-    }
-
-    public List<String>getAllTags(){
-        List<Tag>tagList = this.tagRepository.findAll();
-        Set<String>tags= new HashSet<>();
-        for(Tag tag:tagList){
-            if(!(tags.contains(tag.getTagName()))){
-                tags.add(tag.getTagName());
-            }
-        }
-        return new ArrayList<>(tags);
     }
 }

@@ -10,6 +10,11 @@
 <div class="container">
     <div>
         <h1>My Blog Application</h1>
+        <div sec:authorize="isAuthenticated()">
+             Welcome <b><span sec:authentication="name">User</span></b>
+            &nbsp;
+            <span sec:authentication="principal.authorities"></span>
+        </div>
     </div>
 
     <div>
@@ -37,7 +42,7 @@
     </div>
 
     <div>
-        <form th:action="@{'/page/1'}">
+        <form th:action="@{/page/1}">
             <input type="text" name="keyword" placeholder="Search blog "/>
             <input type="hidden" name="sortField" th:value="${sortField}"/>
             <input type="hidden" name="sortDir" th:value="${sortDir}"/>
@@ -60,9 +65,34 @@
             <span th:each="postTag : ${post.tags}">
                 <span th:text="${postTag.tagName}"></span>&nbsp;
             </span>
+            <span>
+                <a th:href="@{/comment/{id}(id=${post.postId})}">Comments</a>
+            </span>
+            <span  sec:authorize="hasAuthority('ADMIN')">
+                <span>
+                <a th:href="@{/updatePost/{id}(id=${post.postId})}">Update</a>
+            </span>
+                <span>
+                <a th:href="@{/deletePost/{id}(id=${post.postId})}">Delete</a>
+            </span>
+            </span>
         </div>
     </div>
 </div>
+
+<!--<div>
+     Total Posts:[[${totalItems}]] Page [[${currPage}]] of [[${totalPages}]]
+    &nbsp; - &nbsp;
+    <a th:if="${currPage>1}" th:href="@{/page/{pageNo}(pageNo=${currPage-1})}">Prev</a>
+    <span th:unless="${currPage>1}">Prev</span>
+    <span th:each="i : ${#numbers.sequence(1,totalPages)}">
+        <a th:if="${i != currPage}" th:href="@{/page/{pageNo}(pageNo=${i})}">[[${i}]]</a>
+        <span th:unless="${i !=currPage}">[[${i}]]</span>
+        &nbsp;&nbsp;
+    </span>
+    <a th:if="${currPage<totalPages}" th:href="@{/page/{pageNo}(pageNo=${currPage+1})}">Next</a>
+    <span th:unless="${currPage<totalPages}">Next</span>
+</div>-->
 
 
 <div th:if="${totalPages>1}">

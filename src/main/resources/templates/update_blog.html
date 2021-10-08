@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"   xmlns:th="http://wwww.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Blog</title>
+</head>
+<body>
+<div>
+    <h1>Edit Blog</h1>
+    <div>
+        <form th:action="@{/updatePost}" th:object="${post}" method="post">
+            <input type="hidden" name="postId" th:field="*{postId}">
+            <input type="text"
+                   name="title"
+                   th:field="*{title}"
+            ><br>
+            <div>
+                <input type="text"
+                       name="author"
+                       th:field="*{author}"
+                ><br>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th text="Tag Name">Tag Name</th>
+                    <th>
+                        <button type="submit" name="addTag" >Add Tag</button>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tag ,tagStat : *{tags}">
+                    <td>
+                        <input type="text" th:field="*{tags[__${tagStat.index}__].tagName}"  />
+                    </td>
+                    <td>
+                        <input type="hidden" th:field="*{tags[__${tagStat.index}__].createDate}"  />
+                    </td>
+                    <td>
+                        <button type="submit" name="removeTag"  th:value="${tagStat.index}">Remove Tag</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+            <textarea
+                    name="content"
+                    th:field="*{content}"
+                    rows="20"
+                    cols="80"
+            ></textarea>
+            <button type="submit" name="save">Update</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
