@@ -4,13 +4,16 @@ import com.aditya.myblogproject.model.Comment;
 import com.aditya.myblogproject.model.Post;
 
 import com.aditya.myblogproject.model.Tag;
+import com.aditya.myblogproject.model.User;
 import com.aditya.myblogproject.service.CommentService;
 import com.aditya.myblogproject.service.PostService;
 import com.aditya.myblogproject.service.TagService;
+import com.aditya.myblogproject.service.UserService;
 import com.aditya.myblogproject.utils.DateUtil;
-import org.dom4j.rule.Mode;
 import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,14 +30,16 @@ public class MyBlogController {
     private final PostService postService;
     private final TagService tagService;
     private final CommentService commentService;
+    private final UserService userService;
 
 
 
-    public MyBlogController(PostService postService, TagService tagService, CommentService commentService) {
+    public MyBlogController(PostService postService, TagService tagService, CommentService commentService, UserService userService) {
         this.postService = postService;
         this.tagService = tagService;
         this.commentService = commentService;
 
+        this.userService = userService;
     }
 
     @GetMapping
@@ -99,6 +104,14 @@ public class MyBlogController {
     public String savePost(@ModelAttribute("newPost") Post post, BindingResult bindingResult) {
         String dateString = DateUtil.getCurrentInstanceOfDate();
         Date date = DateUtil.getDateFromDateString(dateString);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            String currentUserEmail = authentication.getName();
+            User   user = userService.getUserByEmail(currentUserEmail);
+            post.setAuthor(user.getUserName());
+        }
+
         post.setPublishDate(date);
         post.setPublished(true);
         List<Tag> tags = post.getTags();
@@ -121,22 +134,14 @@ public class MyBlogController {
 
     @GetMapping("/filter/pagination/{pageNo}")
     public String getFilteredAndPaginated(@PathVariable(value = "pageNo") int pageNo,
-                                          @RequestParam(value = "authChecked", defaultValue = "{}") List<String> authChecked,
-                                          @RequestParam(value = "dateChecked", defaultValue = "{}") List<String> dateChecked,
-                                          @RequestParam(value = "tagsChecked" , defaultValue = "{}") List<String> tagsChecked, Model model) {
+                                          @RequestParam(value = "authChecked", defaultValue = "") List<String> authChecked,
+                                          @RequestParam(value = "dateChecked", defaultValue = "") List<String> dateChecked,
+                                          @RequestParam(value = "tagsChecked" , defaultValue = "") List<String> tagsChecked, Model model) {
         int pageSize = 10;
-        if (authChecked == null) {
-            authChecked = new ArrayList<>();
-        }
-        if (dateChecked == null) {
-            dateChecked = new ArrayList<>();
-        }
-        if (tagsChecked == null) {
-            tagsChecked = new ArrayList<>();
-        }
-        List<Post> posts = postService.getFilteredAndPaginatedData(pageNo, pageSize, authChecked, dateChecked, tagsChecked);
-        int totalItems = posts.size();
-        int totalPages = (int) Math.ceil((totalItems * 1.0) / pageSize);
+        Page<Post> page = postService.getFilteredAndPaginatedData(pageNo, pageSize, authChecked, dateChecked, tagsChecked);
+        List<Post>posts=page.getContent();
+        long totalItems = page.getTotalElements();
+        int totalPages = page.getTotalPages();
         model.addAttribute("currPage", pageNo);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalItems", totalItems);

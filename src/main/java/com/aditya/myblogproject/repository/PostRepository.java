@@ -9,23 +9,48 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
+
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
     @Transactional
-    @Query("SELECT p FROM Post p WHERE "+
-    "CONCAT(p.title, ' ' , p.author, ' ', p.publishDate, ' ' ,p.content, ' ' , p.excerpt)"+"  LIKE  %?1%")
-    Page<Post>findAll(String keyword, Pageable pageable);
-
-    @Transactional
-    @Query("SELECT p FROM Post p WHERE p.author IN :authors ")
-    Page<Post>findPostsByAuthors(@Param("authors")Set<String>authors,  Pageable pageable);
-
-    @Transactional
-    @Query("SELECT p FROM Post p WHERE  p.publishDate IN :dates")
-    Page<Post>findPostsByDates(@Param("dates")Set<Date>publishDates, Pageable pageable);
+    @Query("SELECT p FROM Post p JOIN p.tags t WHERE   p.author LIKE  %?1% OR p.title LIKE %?1%  OR t.tagName LIKE %?1%")
+    Page<Post>findAll(@Param("keyword") String keyword, Pageable pageable);
 
     @Transactional
     @Query("SELECT p FROM Post p WHERE  p.postId = :postId")
     Post  findPostById(@Param("postId")int postId);
+
+    @Transactional
+    @Query("SELECT p FROM Post p JOIN p.tags t WHERE p.author IN (?1) AND  p.publishDate IN(?2)  AND t.tagName IN(?3)")
+    Page<Post>findAllPosts(@Param("authors")List<String>authors, @Param("dates")List<Date> publishDates , @Param("tagsChecked")List<String>tagsChecked,
+                           Pageable pageable);
+
+    @Transactional
+    @Query("SELECT p FROM Post p  WHERE p.author IN (?1) AND  p.publishDate IN(?2) ")
+    Page<Post>findAllPostByAuthorAndDate(@Param("authors")List<String>authors, @Param("dates")List<Date> publishDates , Pageable pageable);
+
+
+    @Transactional
+    @Query("SELECT p FROM Post p  JOIN p.tags t WHERE p.author IN (?1) AND  t.tagName IN(?2) ")
+    Page<Post> findAllPostByAuthorAndTag(@Param("authors")List<String>authors,  @Param("tagsChecked")List<String>tagsChecked,Pageable pageable);
+
+    @Transactional
+    @Query("SELECT p FROM Post p  JOIN p.tags t WHERE p.publishDate IN (?1) AND  t.tagName IN(?2) ")
+    Page<Post> findAllPostByDateAndTag(@Param("dates")List<Date> publishDates , @Param("tagsChecked")List<String>tagsChecked, Pageable pageable);
+
+
+    @Transactional
+    @Query("SELECT p FROM Post p  WHERE p.author IN(?1) ")
+    Page<Post> findPostByAuthor(@Param("authors")List<String>authors, Pageable pageable);
+
+
+    @Transactional
+    @Query("SELECT p FROM Post p  WHERE  p.publishDate IN(?1) ")
+    Page<Post> findPostByDate(@Param("dates")List<Date> publishDates , Pageable pageable);
+
+
+    @Transactional
+    @Query("SELECT p FROM Post p  JOIN p.tags t WHERE   t.tagName IN(?1) ")
+    Page<Post> findPostByTag(@Param("tagsChecked")List<String>tagsChecked, Pageable pageable);
 }

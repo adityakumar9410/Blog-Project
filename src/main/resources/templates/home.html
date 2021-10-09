@@ -17,10 +17,10 @@
         </div>
     </div>
 
-    <div>
+    <div sec:authorize="isAnonymous()">
         <a th:href="@{/login}">Log In</a>
     </div>
-      <span sec:authorise="isAuthenticated()"><a th:href="@{/logout}">Logout</a></span>
+      <span sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></span>
     <div>
         <a th:href="@{/newpost}">Write New Post</a>
     </div>

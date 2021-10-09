@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"   xmlns:th="http://wwww.thymeleaf.org">
+<html lang="en"   xmlns:th="http://wwww.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8">
     <title>New Blog</title>
@@ -14,7 +14,7 @@
                    th:field="*{title}"
                    placeholder="Enter Blog Title"
             ><br>
-             <div>
+             <div sec:authorize="isAnonymous()" >
                  <input type="text"
                         name="author"
                         th:field="*{author}"
