@@ -8,23 +8,23 @@
 </head>
 <body>
 <div class="container">
-    <div>
+    <div class="grid-item">
         <h1>My Blog Application</h1>
         <div sec:authorize="isAuthenticated()">
-             Welcome <b><span sec:authentication="name">User</span></b>
+            Welcome <b><span sec:authentication="name">User</span></b>
             &nbsp;
             <span sec:authentication="principal.authorities"></span>
         </div>
     </div>
 
-    <div sec:authorize="isAnonymous()">
+    <div sec:authorize="isAnonymous()" class="grid-item">
         <a th:href="@{/login}">Log In</a>
     </div>
-      <span sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></span>
-    <div>
+    <span sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></span>
+    <div class="grid-item">
         <a th:href="@{/newpost}">Write New Post</a>
     </div>
-    <div>
+    <div class="grid-item">
         <div th:switch="${keyword ==  null}">
             <p th:case="${true}">
                 <a th:href="@{'/page/' + ${currPage} + '?sortField=publishDate&sortDir=' + ${reverseSortDir}+'&keyword=' +''}">Sort
@@ -41,7 +41,7 @@
         </div>
     </div>
 
-    <div>
+    <div class="grid-item">
         <form th:action="@{/page/1}">
             <input type="text" name="keyword" placeholder="Search blog "/>
             <input type="hidden" name="sortField" th:value="${sortField}"/>
@@ -52,7 +52,7 @@
 </div>
 <div class="grid-container">
     <div th:each="post:${posts}">
-        <div class="grid-item">
+        <div class="post-item">
             <div th:text="${post.title}"></div>
             <br>
             <span th:text="${post.author}"></span>&nbsp;
@@ -68,32 +68,28 @@
             <span>
                 <a th:href="@{/comment/{id}(id=${post.postId})}">Comments</a>
             </span>
-            <span  sec:authorize="hasAuthority('ADMIN')">
+            <span th:if=" ${#authorization.expression('hasAuthority(''ADMIN'')')}">
                 <span>
                 <a th:href="@{/updatePost/{id}(id=${post.postId})}">Update</a>
-            </span>
+                </span>
                 <span>
                 <a th:href="@{/deletePost/{id}(id=${post.postId})}">Delete</a>
             </span>
             </span>
+            <span th:if="  ${post.user != null} and ${user != null}">
+                <span th:if="${post.user.userId==user.userId}">
+                    <span>
+                   <a th:href="@{/updatePost/{id}(id=${post.postId})}">Update</a>
+                    </span>
+                    <span>
+                   <a th:href="@{/deletePost/{id}(id=${post.postId})}">Delete</a>
+                  </span>
+                </span>
+            </span>
+
         </div>
     </div>
 </div>
-
-<!--<div>
-     Total Posts:[[${totalItems}]] Page [[${currPage}]] of [[${totalPages}]]
-    &nbsp; - &nbsp;
-    <a th:if="${currPage>1}" th:href="@{/page/{pageNo}(pageNo=${currPage-1})}">Prev</a>
-    <span th:unless="${currPage>1}">Prev</span>
-    <span th:each="i : ${#numbers.sequence(1,totalPages)}">
-        <a th:if="${i != currPage}" th:href="@{/page/{pageNo}(pageNo=${i})}">[[${i}]]</a>
-        <span th:unless="${i !=currPage}">[[${i}]]</span>
-        &nbsp;&nbsp;
-    </span>
-    <a th:if="${currPage<totalPages}" th:href="@{/page/{pageNo}(pageNo=${currPage+1})}">Next</a>
-    <span th:unless="${currPage<totalPages}">Next</span>
-</div>-->
-
 
 <div th:if="${totalPages>1}">
     <div th:switch="${keyword ==  null}">

@@ -49,19 +49,26 @@ public class MyBlogController {
 
     @GetMapping("/page/{pageNo}")
     public String showByPage(@PathVariable(value = "pageNo" ) int pageNo, @RequestParam(value = "sortField" ,defaultValue = "publishDate")String sortField,
-                            @RequestParam(value = "sortDir", defaultValue = "asc")String sortDir, @RequestParam("keyword" )String keyword, Model model) {
-        int pageSize = 4;
+                            @RequestParam(value = "sortDir", defaultValue = "asc")String sortDir, @RequestParam(value = "keyword"  )String keyword, Model model) {
+        int pageSize = 10;
         Page<Post> page = postService.getAllPaginatedPostData(pageNo, pageSize, sortField,sortDir, keyword);
         List<Post> posts = page.getContent();
-
         model.addAttribute("currPage", pageNo);
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("totalItems", page.getTotalElements());
         model.addAttribute("posts", posts);
-
         model.addAttribute("sortDir", sortDir);
         model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
         model.addAttribute("keyword", keyword);
+
+        User user = new User();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            String currentUserEmail = authentication.getName();
+            user = userService.getUserByEmail(currentUserEmail);
+        }
+
+        model.addAttribute("user", user);
         return "home";
     }
 
@@ -109,6 +116,8 @@ public class MyBlogController {
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUserEmail = authentication.getName();
             User   user = userService.getUserByEmail(currentUserEmail);
+
+            post.setUser(user);
             post.setAuthor(user.getUserName());
         }
 
@@ -162,30 +171,46 @@ public class MyBlogController {
     @GetMapping("/deletePost/{id}")
     public String deleteBlogPost(@PathVariable(value = "id") Integer id){
         this.postService.deletePost(id);
-
-        /*this.commentService.deleteCommentsByPostId(id);*/
-
         return "redirect:/";
     }
 
 
-    @GetMapping("/comment/{id}")
-    public String showComments(@PathVariable(value = "id") Integer id, Model model){
-
-        Post post = postService.getById(id);
+    @GetMapping("/comment/{postId}")
+    public String showComments(@PathVariable(value = "postId") Integer postId, Model model){
+        Post post = postService.getById(postId);
         model.addAttribute("post", post);
+
+        User user = new User();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            String currentUserEmail = authentication.getName();
+            user = userService.getUserByEmail(currentUserEmail);
+        }
+
+        model.addAttribute("user", user);
 
         return "post_comment";
     }
 
-    @PostMapping("/comment/{id}")
-    public String saveComment(@PathVariable(value = "id") Integer id,@RequestParam("comment") String cmt, @RequestParam("username")String username){
+    @PostMapping("/comment/{postId}")
+    public String saveComment(@PathVariable(value = "postId") Integer postId,@RequestParam("comment") String cmt, @RequestParam(value = "username", defaultValue ="" )String username){
         String dateString = DateUtil.getCurrentInstanceOfDate();
         Date date  = DateUtil.getDateFromDateString(dateString);
-        Post post = postService.getById(id);
+        Post post = postService.getById(postId);
         Comment comment = new Comment();
+
+        if(username.length() != 0){
+            comment.setUserName(username);
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            String currentUserEmail = authentication.getName();
+            User   user = userService.getUserByEmail(currentUserEmail);
+            comment.setUserName(user.getUserName());
+        }
+
         comment.setComment(cmt);
-        comment.setUserName(username);
         comment.setCreateDate(date);
         post.getComments().add(comment);
         this.postService.savePost(post);
@@ -197,12 +222,12 @@ public class MyBlogController {
 
         Comment comment =  commentService.getCommentById(cmtId);
 
-        model.addAttribute("cmtObj", comment);
+        model.addAttribute("blogComment", comment);
         return "edit_comment";
     }
 
     @PostMapping("/editComment")
-    public String editComment(@ModelAttribute("cmtObj") Comment comment){
+    public String editComment(@ModelAttribute("blogComment") Comment comment){
         String dateString = DateUtil.getCurrentInstanceOfDate();
         Date date = DateUtil.getDateFromDateString(dateString);
         comment.setUpdateDate(date);

@@ -52,11 +52,15 @@ public class Post {
     List<Comment> comments = new ArrayList<>();
 
 
+    @ManyToOne()
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Post() {
     }
 
-    public Post(int postId, String title, String author, String excerpt, String content, boolean isPublished,
-                Date publishDate, Date createDate, Date updateDate, List<Tag> tags) {
+    public Post(int postId, String title, String author, String excerpt, String content, boolean isPublished, Date publishDate, Date createDate, Date updateDate,
+                List<Tag> tags, List<Comment> comments, User user) {
         this.postId = postId;
         this.title = title;
         this.author = author;
@@ -67,6 +71,17 @@ public class Post {
         this.createDate = createDate;
         this.updateDate = updateDate;
         this.tags = tags;
+        this.comments = comments;
+        this.user = user;
+    }
+
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public List<Comment> getComments() {

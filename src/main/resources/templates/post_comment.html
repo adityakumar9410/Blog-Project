@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://wwww.thymeleaf.org">
+<html lang="en" xmlns:th="http://wwww.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8">
     <title>Blog Post</title>
@@ -22,23 +23,39 @@
                 <h4>Comment By :</h4>
                 <span th:text="${comment.userName}">
                 </span>
-                <span>
+                <span sec:authorize="hasAuthority('ADMIN')">
+                    <span>
                         <a th:href="@{/editComment/{cmtId}(cmtId=${comment.commentId})}">EDIT</a>
-                </span>&nbsp;&nbsp;
-                <span>
+                    </span>&nbsp;&nbsp;
+                    <span>
                         <a th:href="@{/deleteComment/{cmtId}(cmtId=${comment.commentId})}">DELETE</a>
+                    </span>
                 </span>
+
+                <span th:if="  ${post.user != null} and ${user != null}">
+                   <span th:if="${post.user.userId==user.userId}">
+                    <span>
+                    <a th:href="@{/editComment/{cmtId}(cmtId=${comment.commentId})}">EDIT</a>
+                    </span>
+                    <span>
+                   <a th:href="@{/deleteComment/{cmtId}(cmtId=${comment.commentId})}">DELETE</a>
+                   </span>
+                  </span>
+               </span>
             </td>
         </tr>
     </table>
 </div>
 <form th:action="@{/comment/{id}(id=${post.postId})}" method="post">
-    <input type="text" name="username" placeholder="Enter name for commenting"><br>
+    <div sec:authorize="isAnonymous()">
+        <input type="text" name="username" placeholder="Enter Your  Name "><br>
+    </div>
+
     <textarea
-                name="comment"
-                rows="20"
-                cols="80"
-                placeholder="Write Comment"
+            name="comment"
+            rows="20"
+            cols="80"
+            placeholder="Write Comment Here"
     ></textarea><br>
     <button type="submit">Add Comment</button>
 </form>

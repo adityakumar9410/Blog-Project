@@ -14,8 +14,8 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
     @Transactional
-    @Query("SELECT p FROM Post p JOIN p.tags t WHERE   p.author LIKE  %?1% OR p.title LIKE %?1%  OR t.tagName LIKE %?1%")
-    Page<Post>findAll(@Param("keyword") String keyword, Pageable pageable);
+    @Query("SELECT DISTINCT p FROM Post p  JOIN p.tags t WHERE p.author LIKE  %?1%  OR p.title LIKE %?1% OR t.tagName LIKE %?1%")
+    Page<Post>findAllPost(@Param("keyword") String keyword, Pageable pageable);
 
     @Transactional
     @Query("SELECT p FROM Post p WHERE  p.postId = :postId")

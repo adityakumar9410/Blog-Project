@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>New Blog</title>
+    <link href="../static/homestyles.css" th:href="@{/homestyles.css}" rel="stylesheet"/>
 </head>
 <body>
-    <div>
+    <div class="center" >
       <h1>Create New Blog</h1>
       <div>
          <form th:action="@{/newpost}" th:object="${newPost}" method="post">
@@ -48,7 +49,7 @@
                        rows="20"
                        cols="80"
                     placeholder="Write here"
-             ></textarea>
+             ></textarea><br>
              <button type="submit" name="save">Submit</button>
          </form>
       </div>

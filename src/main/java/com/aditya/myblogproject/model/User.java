@@ -1,7 +1,9 @@
 package com.aditya.myblogproject.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 
 @Entity
@@ -25,6 +27,11 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id"))
     private Collection<Role>roles ;
 
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Post> posts = new ArrayList<>();
+
+
     public User() {
     }
 
@@ -34,7 +41,10 @@ public class User {
         this.email = email;
         this.password = password;
         this.roles = roles;
+
     }
+
+
 
     public int getUserId() {
         return userId;

@@ -57,17 +57,17 @@ public class PostService {
         this.postRepository.deleteById(id);
     }
 
-    public Page<Post> getPaginated(int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-        return this.postRepository.findAll(pageable);
-    }
+
 
     public Page<Post> getAllPaginatedPostData(int pageNo, int pageSize, String sortField, String sortDir, String keyword) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
-        if (keyword != null) {
-            return this.postRepository.findAll(keyword, pageable);
+        if ( keyword!="") {
+
+            return this.postRepository.findAllPost(keyword, pageable);
+
         }
+
         return this.postRepository.findAll(pageable);
     }
 

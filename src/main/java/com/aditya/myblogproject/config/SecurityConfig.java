@@ -40,9 +40,9 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests()
                 .antMatchers(
-                "/registration", "/**","/", "/homestyles.css", "/deleteComment/**","/editComment/**","/newpost","/page/**","/post**","/post/**","/api/**","/comment/**","/api/posts","/login"
+                "/registration","/", "/**","/homestyles.css", "/newpost","/page/**","/post**","/post/**","/api/**","/comment/**","/api/posts","/login"
                 ).permitAll()
-                .antMatchers("/updatePost/**","/deletePost/**").hasAuthority("ADMIN")
+                .antMatchers("/updatePost/**","/deletePost/**", "/editComment/**","/deleteComment/**").hasAuthority("ADMIN")
                 .requestMatchers(req->req.getRequestURI().equals("page")).permitAll()
                 .anyRequest().authenticated()
                 .and()
