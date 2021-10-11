@@ -116,7 +116,6 @@ public class MyBlogController {
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUserEmail = authentication.getName();
             User   user = userService.getUserByEmail(currentUserEmail);
-
             post.setUser(user);
             post.setAuthor(user.getUserName());
         }

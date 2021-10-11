@@ -24,7 +24,7 @@ public class PostService {
         this.tagRepository = tagRepository;
     }
 
-    public List<Post> getAllPost() {
+    public List<Post> getAllPosts() {
         return postRepository.findAll();
     }
 

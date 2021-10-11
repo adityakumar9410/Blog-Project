@@ -1,5 +1,7 @@
 package com.aditya.myblogproject.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 import java.util.*;
@@ -52,6 +54,7 @@ public class Post {
     List<Comment> comments = new ArrayList<>();
 
 
+    @JsonIgnore
     @ManyToOne()
     @JoinColumn(name = "user_id")
     private User user;
