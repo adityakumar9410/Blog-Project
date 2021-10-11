@@ -53,4 +53,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Transactional
     @Query("SELECT p FROM Post p  JOIN p.tags t WHERE   t.tagName IN(?1) ")
     Page<Post> findPostByTag(@Param("tagsChecked")List<String>tagsChecked, Pageable pageable);
+
+    @Transactional
+    @Query("SELECT DISTINCT p FROM Post p  JOIN p.tags t WHERE p.author LIKE  %?1%  OR p.title LIKE %?1% OR t.tagName LIKE %?1%")
+    List<Post>findPosts(@Param("keyword") String keyword);
+
+
 }

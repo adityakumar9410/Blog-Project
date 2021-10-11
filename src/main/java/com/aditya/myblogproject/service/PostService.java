@@ -44,6 +44,7 @@ public class PostService {
         currentPost.setTitle(post.getTitle());
         currentPost.setContent(post.getContent());
         currentPost.setAuthor(post.getAuthor());
+        currentPost.setUpdateDate(post.getUpdateDate());
         postRepository.save(currentPost);
         return currentPost;
     }
@@ -85,6 +86,9 @@ public class PostService {
 
     public Page<Post> getFilteredAndPaginatedData(int pageNo, int pageSize, List<String> authors,
                                                   List<String> publishDates, List<String> tagsChecked) {
+        if (pageNo==0){
+            pageNo=1;
+        }
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
 
         List<Date> blogPublishDates = new ArrayList<>();
@@ -137,4 +141,21 @@ public class PostService {
         }
         return new ArrayList<>(publishDates);
     }
+
+    public List<Post> findAllPostWithSorting(String sortField) {
+        return postRepository.findAll(Sort.by(Sort.Direction.ASC,sortField));
+    }
+
+    public Page<Post> getAllPaginatedPost(Optional<Integer> start, Optional<Integer> limit) {
+        return postRepository.findAll(PageRequest.of(
+                start.orElse(0),
+                limit.orElse(5)
+        ));
+    }
+
+    public List<Post> searchPost(Optional<String> search) {
+        return this.postRepository.findPosts(search.orElse(""));
+    }
+
+
 }
