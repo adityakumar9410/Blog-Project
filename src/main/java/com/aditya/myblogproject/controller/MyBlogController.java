@@ -49,7 +49,7 @@ public class MyBlogController {
     @GetMapping("/page/{pageNo}")
     public String showByPage(@PathVariable(value = "pageNo") int  pageNo, @RequestParam(value = "sortField", defaultValue = "publishDate") String sortField,
                              @RequestParam(value = "sortDir", defaultValue = "asc") String sortDir, @RequestParam(value = "keyword") String keyword, Model model) {
-        int pageSize = 4;
+        int pageSize = 10;
         Page<Post> page = postService.getAllPaginatedPostData(pageNo, pageSize, sortField, sortDir, keyword);
         List<Post> posts = page.getContent();
         model.addAttribute("currPage", pageNo);
@@ -144,7 +144,7 @@ public class MyBlogController {
                                           @RequestParam(value = "authChecked", defaultValue = "") List<String> authChecked,
                                           @RequestParam(value = "dateChecked", defaultValue = "") List<String> dateChecked,
                                           @RequestParam(value = "tagsChecked", defaultValue = "") List<String> tagsChecked, Model model) {
-        int pageSize = 2;
+        int pageSize = 10;
         Page<Post> page = postService.getFilteredAndPaginatedData(pageNo, pageSize, authChecked, dateChecked, tagsChecked);
         List<Post> posts = page.getContent();
         long totalItems = page.getTotalElements();
