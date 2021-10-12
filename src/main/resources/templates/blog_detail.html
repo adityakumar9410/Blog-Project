@@ -3,16 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Blog Post</title>
-    <link href="../static/homestyles.css" th:href="@{/homestyles.css}" rel="stylesheet"/>
+    <link  th:href="@{/homestyles.css}" rel="stylesheet"/>
 </head>
 <body>
-<div class="container">
-    <div>
-        <h1>My Blog Application</h1>
-    </div>
-
-</div>
-<div class="grid-container">
+<div class="post-item">
+    <h1>My Blog Application</h1>
     <div th:object="${post}">
         <div class="post-item">
             <div th:text="${post.title}"></div>
@@ -24,7 +19,6 @@
             <span th:each="postTag : ${post.tags}">
                 <span th:text="${postTag.tagName}"></span> &nbsp;
             </span>
-
         </div>
     </div>
 </div>

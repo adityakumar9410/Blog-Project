@@ -27,8 +27,8 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    public User  saveUser(User user){
-       user.setRoles(Arrays.asList(new Role("ROLE_USER")));
+    public User saveUser(User user) {
+        user.setRoles(Arrays.asList(new Role("ROLE_USER")));
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
@@ -37,20 +37,17 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username);
-        if(user==null){
+        if (user == null) {
             throw new UsernameNotFoundException("Invalid User or Password");
         }
-
-        return new  org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), mapRolesToAuthority(user.getRoles()));
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), mapRolesToAuthority(user.getRoles()));
     }
 
-    private Collection<? extends GrantedAuthority>mapRolesToAuthority(Collection<Role>roles){
-
-
-        return roles.stream().map(role->new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
+    private Collection<? extends GrantedAuthority> mapRolesToAuthority(Collection<Role> roles) {
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
     }
 
-    public  User getUserByEmail(String email){
+    public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 }

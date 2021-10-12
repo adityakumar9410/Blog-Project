@@ -6,7 +6,6 @@ import javax.persistence.*;
 
 import java.util.*;
 
-
 @Entity
 @Table(name = "posts")
 public class Post {
@@ -24,7 +23,6 @@ public class Post {
     @Column(name = "excerpt")
     private String excerpt;
 
-
     @Lob
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
@@ -32,7 +30,7 @@ public class Post {
     @Column(name = "is_published")
     private boolean isPublished;
 
-    @Column(name = "published_at" , updatable = false)
+    @Column(name = "published_at", updatable = false)
     private Date publishDate = null;
 
 
@@ -42,17 +40,15 @@ public class Post {
     @Column(name = "updated_at")
     private Date updateDate = null;
 
-
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "post_tags",
             joinColumns = {@JoinColumn(name = "post_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
-    private List<Tag> tags= new ArrayList<>();
+    private List<Tag> tags = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-     @JoinColumn(name = "post_id" , referencedColumnName = "post_id")
+    @JoinColumn(name = "post_id", referencedColumnName = "post_id")
     List<Comment> comments = new ArrayList<>();
-
 
     @JsonIgnore
     @ManyToOne()

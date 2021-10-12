@@ -12,6 +12,20 @@
 
 }
 
+.header {
+    display: inline-block;
+    width: 100%;
+    border: 1px solid #0a0a0a;
+    height: 25px;
+    clear: both;
+}
+.prev {
+    float: left;
+}
+.next {
+    float: right;
+}
+
 .post-item{
     border: 1px solid rgba(0, 0, 0, 0.8);
     padding: 25px;

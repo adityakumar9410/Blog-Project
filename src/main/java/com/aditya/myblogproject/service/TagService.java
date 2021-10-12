@@ -21,7 +21,7 @@ public class TagService {
         return tagRepository.findAll();
     }
 
-    public List<String> getAllUniqueTags() {
+    public List<String> getAllBlogTags() {
         List<Tag> tags = this.tagRepository.findAll();
         Set<String> uniqueTags = new HashSet<>();
         for (Tag tag : tags) {

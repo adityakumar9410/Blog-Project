@@ -10,18 +10,17 @@
     <div>
         <h1>My Blog Application</h1>
     </div>
-
     <div>
         <div>
-            <form th:action="@{/filter/pagination/1}">
+            <form th:action="@{/filter/page/1}">
                 <table>
                     <tr>
                         <td>Filter by Author</td>
                         <td>
-                               <th:block th:each="author : ${authors}">
-                                   <input type="checkbox" name="authChecked" th:value="${author}"/>
-                                   <label th:text="${author}"></label>
-                               </th:block>
+                            <th:block th:each="author : ${authors}">
+                                <input type="checkbox" name="authChecked" th:value="${author}"/>
+                                <label th:text="${author}"></label>
+                            </th:block>
                         </td>
                     </tr>
                     <tr>
@@ -46,10 +45,7 @@
                 <input type="submit" value="Filter">
             </form>
         </div>
-
     </div>
-
-
 </div>
 <div class="grid-container">
     <div th:each="post:${posts}">
@@ -65,10 +61,41 @@
             <span th:each="postTag : ${post.tags}">
                 <span th:text="${postTag.tagName}"></span>&nbsp;
             </span>
+            <span>
+                <a th:href="@{/comment/{id}(id=${post.postId})}">Comments</a>
+            </span>
+            <span th:if=" ${#authorization.expression('hasAuthority(''ADMIN'')')}">
+                <span>
+                <a th:href="@{/updatePost/{id}(id=${post.postId})}">Update</a>
+                </span>
+                <span>
+                <a th:href="@{/deletePost/{id}(id=${post.postId})}">Delete</a>
+            </span>
+            </span>
+            <span th:if="  ${post.user != null} and ${user != null}">
+                <span th:if="${post.user.userId==user.userId}">
+                    <span>
+                   <a th:href="@{/updatePost/{id}(id=${post.postId})}">Update</a>
+                    </span>
+                    <span>
+                   <a th:href="@{/deletePost/{id}(id=${post.postId})}">Delete</a>
+                  </span>
+                </span>
+            </span>
         </div>
     </div>
 </div>
-
-
+<div th:if="${totalPages>1}">
+    <div class="header">
+        <div class="prev">
+            <a th:if="${currPage>1}"
+               th:href="@{'/filter/page/'+${currPage-1}+'?'+${filterParam}}">Prev</a>
+        </div>
+       <div class="next">
+           <a th:if="${currPage < totalPages}"
+              th:href="@{'/filter/page/'+${currPage+1}+'?'+${filterParam}}">Next</a>
+       </div>
+    </div>
+</div>
 </body>
 </html>

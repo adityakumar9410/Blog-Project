@@ -49,13 +49,10 @@ public class PostRestController {
         } catch (BadCredentialsException e) {
             throw new Exception("Invalid email or password");
         }
-
         final UserDetails userDetails = userService.loadUserByUsername(user.getEmail());
         final String jwt = jwtUtil.generateToken(userDetails);
-
         return ResponseEntity.ok(new JwtResponse(jwt));
     }
-
 
     @GetMapping("/posts/{postId}")
     public ResponseEntity<Post> getPostById(@PathVariable int postId) {
@@ -87,41 +84,33 @@ public class PostRestController {
         return new ResponseEntity<>("Post deleted Successfully", HttpStatus.OK);
     }
 
-
-    @GetMapping("/blogs/{sortField}")
-    public ResponseEntity<List<Post>> getAllPostWithSorting( @PathVariable String sortField){
-
-        return new ResponseEntity<>(postService.findAllPostWithSorting(sortField), HttpStatus.OK);
-    }
-
     @GetMapping("/posts")
-    public Page<Post>getPaginatedPosts(
-            @RequestParam Optional<Integer>start,
-            @RequestParam Optional<Integer>limit
-            ){
-        return  postService.getAllPaginatedPost(start, limit);
+    public Page<Post> getPaginatedPosts(
+            @RequestParam Optional<Integer> start,
+            @RequestParam Optional<Integer> limit,
+            @RequestParam Optional<String> sortField,
+            @RequestParam Optional<String>sortDir
+    ) {
+        return postService.getAllPaginatedPostWithSorting(start, limit, sortField, sortDir);
     }
-
 
     @GetMapping("/posts/searchPost")
-    public List<Post>searchPost(
-            @RequestParam Optional<String>search
-    ){
-
+    public List<Post> searchPost(
+            @RequestParam Optional<String> search
+    ) {
         return postService.searchPost(search);
     }
 
     @GetMapping("/posts/filter")
-    public Page<Post>getFilteredPost(
-            @RequestParam Optional<Integer>start,
-            @RequestParam Optional<Integer>limit,
-            @RequestParam Optional<List<String>>authors,
-            @RequestParam Optional<List<String>>publishDates,
-            @RequestParam Optional<List<String>>tags
-    ){
-        List<String>args = new ArrayList<>();
-        return postService.getFilteredAndPaginatedData(start.orElse(1), limit.orElse(10), authors.orElse(args), publishDates.orElse(args), tags.orElse(args) );
+    public Page<Post> getFilteredPost(
+            @RequestParam Optional<Integer> start,
+            @RequestParam Optional<Integer> limit,
+            @RequestParam Optional<List<String>> authors,
+            @RequestParam Optional<List<String>> publishDates,
+            @RequestParam Optional<List<String>> tags
+    ) {
+        List<String> args = new ArrayList<>();
+        return postService.getFilteredAndPaginatedData(start.orElse(1), limit.orElse(10), authors.orElse(args),
+                publishDates.orElse(args), tags.orElse(args));
     }
-
-
 }

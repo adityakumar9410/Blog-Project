@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link  th:href="@{/homestyles.css}" rel="stylesheet"/>
 </head>
 <body>
-  <div class="container">
+  <div class="post-item">
         <div th:if="${param.success}">
                 <h1>Yoy have registered successfully</h1>
         </div>

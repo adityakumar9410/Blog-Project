@@ -34,7 +34,10 @@
                  <tbody>
                  <tr th:each="tag ,tagStat : *{tags}">
                      <td>
-                         <input type="text" th:field="*{tags[__${tagStat.index}__].tagName}"  />
+                         <input th:list="tag-list" type="text" th:field="*{tags[__${tagStat.index}__].tagName}"  />
+                         <datalist th:id="tag-list">
+                             <option th:each="blogTag : ${blogTags}" th:value="${blogTag}" th:label="${blogTag}">
+                         </datalist>
                      </td>
                      <td>
                          <button type="submit" name="removeTag"  th:value="${tagStat.index}">Remove Tag</button>
