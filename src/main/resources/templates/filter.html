@@ -72,7 +72,7 @@
                 <a th:href="@{/deletePost/{id}(id=${post.postId})}">Delete</a>
             </span>
             </span>
-            <span th:if="  ${post.user != null} and ${user != null}">
+            <span th:if="  ${post.user != null} and ${user != null} and ${#authorization.expression('hasAuthority(''ROLE_USER'')')} ">
                 <span th:if="${post.user.userId==user.userId}">
                     <span>
                    <a th:href="@{/updatePost/{id}(id=${post.postId})}">Update</a>
